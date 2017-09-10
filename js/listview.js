@@ -84,12 +84,14 @@ enyo.kind({
 	// Init setup for a line
 	setupItem: function(inSender, inEvent) {
 		// Set item in the template
-		var activitiesList = this.activities;
+		var activitiesList = sorted(this.activities);
 		if (activitiesList[inEvent.index].type !== 'undefined' && activitiesList[inEvent.index].type == "native") {
-			inEvent.item.$.activity.setIcon({isNative:true, icon:activitiesList[inEvent.index].icon});
-		} else {
-			inEvent.item.$.activity.setIcon(activitiesList[inEvent.index]);
+			activitiesList[inEvent.index].isNative = true;
 		}
+		if (inEvent.index == 0) {
+			tutorial.setElement("favoriteitembutton", inEvent.item.$.favorite.getAttribute("id"));
+		}
+		inEvent.item.$.activity.setIcon(activitiesList[inEvent.index]);
 		inEvent.item.$.activity.setPopupShow(enyo.bind(this, "showActivityPopup"));
 		inEvent.item.$.activity.setPopupHide(enyo.bind(this, "hideActivityPopup"));
 		inEvent.item.$.favorite.setIcon({directory: "icons", icon: "emblem-favorite.svg"});
@@ -106,7 +108,7 @@ enyo.kind({
 	onscroll: function(inSender, inEvent) {
 		var scrollBounds = inEvent.scrollBounds;
 		var currentCount = this.$.activityList.get("count");
-		if (app.getToolbar().getSearchText().length == 0 && (scrollBounds.maxTop - scrollBounds.top) < constant.listScrollLimit && this.realLength > currentCount) {
+		if (app.getToolbar().getSearchText().length == 0 && scrollBounds && (scrollBounds.maxTop - scrollBounds.top) < constant.listScrollLimit && this.realLength > currentCount) {
 			var length = Math.min(currentCount + constant.listStepCount, this.activities.length);
 			humane.log(l10n.get("Loading"));
 			this.$.activityList.set("count", length, true);
@@ -115,7 +117,7 @@ enyo.kind({
 
 	// Switch favorite value for clicked line
 	doSwitchFavorite: function(inSender, inEvent) {
-		var activitiesList = this.activities;
+		var activitiesList = sorted(this.activities);
 		this.switchFavorite(inEvent.dispatchTarget.container, activitiesList[inEvent.index]);
 	},
 	switchFavorite: function(favorite, activity) {
@@ -130,12 +132,13 @@ enyo.kind({
 
 	// Run new activity
 	doRunNewActivity: function(inSender, inEvent) {
-		var activitiesList = this.activities;
+		var activitiesList = sorted(this.activities);
 		this.runNewActivity(activitiesList[inEvent.index])
 	},
 	runNewActivity: function(activity) {
 		// Start a new activity instance
 		util.vibrate();
+		this.$.activityPopup.hidePopup();
 		preferences.runActivity(activity, null);
 	},
 
@@ -186,3 +189,15 @@ enyo.kind({
 		app.filterActivities();
 	}
 });
+
+// Sort activities
+function sorted(activities) {
+	var result = [];
+	for (var i in activities) {
+		result.push(activities[i]);
+	}
+	result.sort(function (a, b) {
+		return a.name == b.name ? 0 : (a.name > b.name ? 1 : -1);
+	});
+	return result;
+}

@@ -66,31 +66,32 @@ enyo.kind({
 		if (window.sugarizerOS) {
 			var networkIcons = [];
 			var networks = sugarizerOS.networks;
-			for (var i = 0; i < networks.length; i++){
-			var currentNetwork = networks[i];
-			var encryptionString = sugarizerOS.getEncryptionString(currentNetwork.capabilities);
-			var connectedString = "";
-			var securedString = "";
-			var pwr = (-1 * currentNetwork.RSSI) % 10;
-			if (currentNetwork.isConnected) {
-				connectedString = "-connected";
-			} else if (encryptionString != "OPEN") {
-				securedString = "-locked";
-			}
-			if (pwr > 0) {
-				if (pwr % 2 != 0) {
-					pwr +=1;
+			var wifiInTutorial = false;
+			for (var i = 0; i < networks.length; i++) {
+				var currentNetwork = networks[i];
+				var encryptionString = sugarizerOS.getEncryptionString(currentNetwork.capabilities);
+				var connectedString = "";
+				var securedString = "";
+				var pwr = (-1 * currentNetwork.RSSI) % 10;
+				if (currentNetwork.isConnected) {
+					connectedString = "-connected";
+				} else if (encryptionString != "OPEN") {
+					securedString = "-locked";
 				}
-				pwr = pwr * 10;
-				cacheIcon = sugarizerOS.getNetworkIconFromCache(currentNetwork.BSSID);
-				if (!cacheIcon) {
-					currentNetwork.networkId = currentNetwork.BSSID;
-					currentNetwork.shared = false;
-					currentNetwork.shared.id = currentNetwork.BSSID;
-					currentNetwork.color =  xoPalette.colors[Math.floor(Math.random()*xoPalette.colors.length)];
-				} else {
-					currentNetwork = cacheIcon;
-				}
+				if (pwr > 0) {
+					if (pwr % 2 != 0) {
+						pwr += 1;
+					}
+					pwr = pwr * 10;
+					cacheIcon = sugarizerOS.getNetworkIconFromCache(currentNetwork.BSSID);
+					if (!cacheIcon) {
+						currentNetwork.networkId = currentNetwork.BSSID;
+						currentNetwork.shared = false;
+						currentNetwork.shared.id = currentNetwork.BSSID;
+						currentNetwork.color = xoPalette.colors[Math.floor(Math.random() * xoPalette.colors.length)];
+					} else {
+						currentNetwork = cacheIcon;
+					}
 
 				iconString = "network-wireless"+connectedString+securedString+"-0"+pwr+".svg";
 				if (pwr == 100) {
@@ -109,6 +110,10 @@ enyo.kind({
 					{owner: this}
 				);
 				icon.render();
+				if (!wifiInTutorial) {
+					tutorial.setElement("wifi", icon.getAttribute("id"));
+					wifiInTutorial = true;
+				}
 				networkIcons.push(icon);
 				sugarizerOS.addNetworkIconToCache(currentNetwork);
 				var item = {icon: icon, size: icon.getSize(), locked: false, child: []};
@@ -248,26 +253,46 @@ enyo.kind({
 		sugarizerOS.disconnectWifi();
 		this.getPopup().hidePopup();
 	},
-	joinNetwork: function(network) {
-		sugarizerOS.joinNetwork(network.SSID, sugarizerOS.sharedKeyBuffer, network.capabilities);
-		sugarizerOS.setKey(network.SSID, sugarizerOS.sharedKeyBuffer);
+
+	forgetPassword: function(network) {
+		sugarizerOS.forgetNetwork(network.SSID);
 		this.getPopup().hidePopup();
 	},
-	enterKey: function(network){
-		sugarizerOS.getKeyStore(function(keyStore){
-			sugarizerOS.keyStore = keyStore;
+
+	joinNetwork: function(network) {
+		var t = this;
+
+		sugarizerOS.isKnownNetwork(network.SSID, function (result) {
+			if (result == 0) {
+				sugarizerOS.setKey(network.SSID, "", true);
+			} else {
+				sugarizerOS.joinNetwork(network.SSID);
+			}
+			t.getPopup().hidePopup();
 		});
-		sugarizerOS.sharedKeyBuffer = sugarizerOS.keyStore[network.SSID];
-		sugarizerOS.NetworkBuffer = network;
+	},
+
+	enterKey: function (network) {
 		this.getPopup().hidePopup();
-		this.otherview = this.$.otherview.createComponent({kind: "Sugar.DialogNetworkKey"});
-		this.otherview.show();
+		var t = this;
+		sugarizerOS.isKnownNetwork(network.SSID, function (result) {
+			if (result == 0) {
+				sugarizerOS.NetworkBuffer = network;
+				t.otherview = t.$.otherview.createComponent({
+					kind: "Sugar.DialogNetworkKey"
+				});
+				t.otherview.show();
+			} else {
+				sugarizerOS.joinNetwork(network.SSID)
+			}
+		})
+
 	},
 	//Popup menu for Wireless Network handling
 	showWifiPopup: function(icon) {
 		// Create popup
 		var data = icon.getData();
-		var iconName = data.SSID + " ("+ data.RSSI + ")" + "[" + sugarizerOS.getEncryptionString(data.capabilities) + "]";
+		var iconName = data.SSID + " (" + data.RSSI + ")" + "[" + sugarizerOS.getEncryptionString(data.capabilities) + "]";
 		var power = (-1 * data.RSSI) % 5;
 		this.getPopup().setHeader({
 			icon: icon.icon,
@@ -278,34 +303,62 @@ enyo.kind({
 			action: null
 		});
 		var items = [];
-		if (!data.isConnected) {
-			item = {
-				icon: {directory: "icons", icon: "activity-start.svg"},
-				colorized: false,
-				name: l10n.get("JoinNetwork"),
-				action: enyo.bind(this, "joinNetwork"),
-				data: [icon.getData(), null]
-			};
-			if (sugarizerOS.getEncryptionString(data.capabilities) != "OPEN") {
-				item.action = enyo.bind(this, "enterKey");
-			}
-		} else {
-			item = {
-				icon: {directory: "icons", icon: "activity-start.svg"},
-				colorized: false,
-				name: l10n.get("Disconnect"),
-				action: enyo.bind(this, "disconnect"),
-				data: [icon.getData(), null]
-			};
-		}
-		items.push(item);
 
-		this.getPopup().setItems(items);
-		this.getPopup().setFooter(null);
-		// Show popup
-		this.getPopup().showPopup();
+		var t = this;
+		sugarizerOS.getWifiSSID(function (ssid) {
+			if (ssid == null || ssid !== data.SSID) {
+				item = {
+					icon: {
+						directory: "icons", icon: "activity-start.svg"
+					},
+					colorized: false,
+					name: l10n.get("JoinNetwork"),
+					action: enyo.bind(t, "joinNetwork"),
+					data: [icon.getData(), null]
+				};
+				if (sugarizerOS.getEncryptionString(data.capabilities) != "OPEN") {
+					item.action = enyo.bind(t, "enterKey");
+				}
+			} else {
+				item = {
+					icon: {
+						directory: "icons",
+						icon: "activity-start.svg"
+					},
+					colorized: false,
+					name: l10n.get("Disconnect"),
+					action: enyo.bind(t, "disconnect"),
+					data: [icon.getData(), null]
+				};
+			}
+			items.push(item);
+
+
+			sugarizerOS.isKnownNetwork(data.SSID, function (result) {
+				if (result == 1) {
+					item = {
+						icon: {
+							directory: "icons",
+							icon: "activity-start.svg"
+						},
+						colorized: false,
+						name: l10n.get("ForgetPassword"),
+						action: enyo.bind(t, "forgetPassword"),
+						data: [icon.getData(), null]
+					};
+					if (sugarizerOS.getEncryptionString(data.capabilities) != "OPEN") {
+						items.push(item);
+					}
+				}
+
+				t.getPopup().setItems(items);
+				t.getPopup().setFooter(null);
+				// Show popup
+				t.getPopup().showPopup();
+			})
+		})
 	},
-	hideWifiPopup: function(icon) {
+	hideWifiPopup: function (icon) {
 		if ((this.getPopup() && this.getPopup().cursorIsInside()) || icon.cursorIsInside()) {
 			return false;
 		}
@@ -449,6 +502,8 @@ enyo.kind({
 		this.$.message.setContent(l10n.get("ServerNotSet"));
 		this.$.gotosettings.applyStyle("margin-top", (margintop+90)+"px");
 		this.$.gotosettings.setText(l10n.get("MySettings"));
+		tutorial.setElement("owner", this.$.owner.getAttribute("id"));
+		tutorial.setElement("server", this.$.server.getAttribute("id"));
 
 		// Clean network icons
 		var items = [];
@@ -517,6 +572,7 @@ enyo.kind({
 		// Add user icons
 		var len = this.users.length;
 		var userIcons = [];
+		var otherInTutorial = false;
 		for (var i = 0 ; i < len ; i++) {
 			 var currentUser = this.users[i];
 			 if (currentUser.networkId != preferences.getNetworkId()) {
@@ -533,6 +589,10 @@ enyo.kind({
 					{owner: this}
 				);
 				icon.render();
+				if (!otherInTutorial) {
+					tutorial.setElement("other", icon.getAttribute("id"));
+					otherInTutorial = true;
+				}
 				userIcons.push(icon);
 			 }
 		}
@@ -540,6 +600,7 @@ enyo.kind({
 		// Add activities icons
 		len = this.activities.length;
 		var userIconsInActivities = [];
+		var activityInTutorial = false;
 		for (var i = 0 ; i < len ; i++) {
 			// Unknown activity, ignoe
 			 var currentActivity = this.activities[i];
@@ -562,6 +623,10 @@ enyo.kind({
 				{owner: this}
 			);
 			icon.render();
+			if (!activityInTutorial) {
+				tutorial.setElement("activity", icon.getAttribute("id"));
+				activityInTutorial = true;
+			}
 
 			// Add childs
 			var childIcons = [];
@@ -740,6 +805,7 @@ enyo.kind({
 	kind: enyo.Control,
 	components: [
 		{name: "neighborsearch", kind: "Sugar.SearchField", onTextChanged: "filterNetwork", classes: "neighbor-filter-text"},
+		{name: "helpbutton", kind: "Button", classes: "toolbutton help-button", title:"Help", ontap: "startTutorial"},
 		{name: "radialbutton", kind: "Button", classes: "toolbutton view-desktop-button", title:"Home", title:"Home", ontap: "gotoDesktop"}
 	],
 
@@ -752,6 +818,7 @@ enyo.kind({
 
 	rendered: function() {
 		this.$.radialbutton.setNodeProperty("title", l10n.get("Home"));
+		this.$.helpbutton.setNodeProperty("title", l10n.get("Tutorial"));
 	},
 
 	// Handle search text content
@@ -768,5 +835,11 @@ enyo.kind({
 
 	filterNetwork: function() {
 		app.otherview.filterNetwork();
+	},
+
+	startTutorial: function() {
+		tutorial.setElement("radialbutton", this.$.radialbutton.getAttribute("id"));
+		tutorial.setElement("neighborsearch", this.$.neighborsearch.getAttribute("id"));
+		tutorial.start();
 	}
 });

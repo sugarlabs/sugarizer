@@ -87,6 +87,11 @@ enyo.kind({
 		var margintop = (canvas_center.y-constant.sizeEmpty/4-80);
 		this.$.empty.applyStyle("margin-top", margintop+"px");
 		this.$.message.setContent(l10n.get("JournalEmpty"));
+		if (preferences.getNetworkId() != null && preferences.getPrivateJournal() != null && preferences.getSharedJournal() != null) {
+			tutorial.setElement("journalbutton", this.$.journalbutton.getAttribute("id"));
+			tutorial.setElement("cloudonebutton", this.$.cloudonebutton.getAttribute("id"));
+			tutorial.setElement("cloudallbutton", this.$.cloudallbutton.getAttribute("id"));
+		}
 	},
 
 	updateNetworkBar: function() {
@@ -149,6 +154,12 @@ enyo.kind({
 			inEvent.item.$.title.addClass("rtl-14");
 			inEvent.item.$.titleEdit.addClass("rtl-14");
 			inEvent.item.$.time.addClass("rtl-14");
+		}
+		if (inEvent.index == 0) {
+			tutorial.setElement("activityitem", inEvent.item.$.activity.getAttribute("id"));
+			tutorial.setElement("titleitem", inEvent.item.$.title.getAttribute("id"));
+			tutorial.setElement("timeitem", inEvent.item.$.time.getAttribute("id"));
+			tutorial.setElement("favoriteitem", inEvent.item.$.favorite.getAttribute("id"));
 		}
 	},
 
@@ -298,6 +309,15 @@ enyo.kind({
 			data: [entry, preferences.getSharedJournal()],
 			disable: this.journalType == constant.journalRemoteShared
 		});
+		if (util.getClientType() == constant.appType && (enyo.platform.android || enyo.platform.androidChrome || enyo.platform.ios)) {
+			items.push({
+				icon: {directory: "icons", icon: "module-about_my_computer.svg"},
+				colorized: false,
+				name: l10n.get("CopyToDevice"),
+				action: enyo.bind(this, "copyToDevice"),
+				data: [entry, null]
+			});
+		}
 		items.push({
 			icon: {directory: "icons", icon: "list-remove.svg"},
 			colorized: false,
@@ -326,6 +346,25 @@ enyo.kind({
 			datastore.create(metadata, function(error, oid) {
 			}, text);
 			that.$.activityPopup.hidePopup();
+		});
+	},
+
+	// Copy activity content into a file onthe device
+	copyToDevice: function(entry) {
+		var that = this;
+		this.loadEntry(entry, function(err, metadata, text) {
+			if (text == null) {
+				that.$.activityPopup.hidePopup();
+				return;
+			}
+			util.writeFile(metadata, text, function(err, filename) {
+				if (err) {
+					humane.log(l10n.get("ErrorWritingFile"));
+				} else {
+					humane.log(l10n.get("FileWroteTo",{file:filename}));
+				}
+				that.$.activityPopup.hidePopup();
+			});
 		});
 	},
 
@@ -526,7 +565,8 @@ enyo.kind({
 		{name: "journalsearch", kind: "Sugar.SearchField", onTextChanged: "filterEntries", classes: "journal-filter-text"},
 		{name: "radialbutton", kind: "Button", classes: "toolbutton view-desktop-button", title:"Home", title:"Home", ontap: "gotoDesktop"},
 		{name: "typeselect", kind: "Sugar.SelectBox", classes: "journal-filter-type", onIndexChanged: "filterEntries"},
-		{name: "timeselect", kind: "Sugar.SelectBox", classes: "journal-filter-time", onIndexChanged: "filterEntries"}
+		{name: "timeselect", kind: "Sugar.SelectBox", classes: "journal-filter-time", onIndexChanged: "filterEntries"},
+		{name: "helpbutton", kind: "Button", classes: "toolbutton help-button-journal", title:"Help", ontap: "startTutorial"}
 	],
 
 	// Constructor
@@ -558,6 +598,7 @@ enyo.kind({
 	rendered: function() {
 		this.$.favoritebutton.setNodeProperty("title", l10n.get("FilterFavorites"));
 		this.$.radialbutton.setNodeProperty("title", l10n.get("Home"));
+		this.$.helpbutton.setNodeProperty("title", l10n.get("Tutorial"));
 	},
 
 	// Event handling
@@ -596,5 +637,14 @@ enyo.kind({
 		this.$.favoritebutton.setColorized(false);
 		this.$.journalsearch.setText("");
 		this.render();
+	},
+
+	startTutorial: function() {
+		tutorial.setElement("favoritebutton", this.$.favoritebutton.getAttribute("id"));
+		tutorial.setElement("searchtext", this.$.journalsearch.getAttribute("id"));
+		tutorial.setElement("typeselect", this.$.typeselect.getAttribute("id"));
+		tutorial.setElement("timeselect", this.$.timeselect.getAttribute("id"));
+		tutorial.setElement("radialbutton", this.$.radialbutton.getAttribute("id"));
+		tutorial.start();
 	}
 });

@@ -3,8 +3,8 @@
 		xmlns:cdv="http://cordova.apache.org/ns/1.0"
 		xmlns:android   = "http://schemas.android.com/apk/res/android"
 		id        = "org.olpc-france.sugarizer"
-		version   = "0.8.0"
-		android-versionCode = "8000">
+		version   = "0.9.0"
+		android-versionCode = "9000">
 	<name>Sugarizer</name>
 
 	<description>
@@ -38,6 +38,8 @@
 	<plugin name="cordova-plugin-vibration" version="2.1.1" />
 	<plugin name="cordova-plugin-fullscreen" version="1.1.0" />
 	<plugin name="com.develcode.plugins.volumeControl" spec="https://github.com/manusimpson/Phonegap-Android-VolumeControl.git"/>
+	<plugin name="cordova-plugin-ios-longpress-fix" version="1.1.0" />
+	<plugin name="cordova-plugin-qrscanner" version="2.5.0" />
 
 	<!-- &SugarizerOS
 	<plugin name="cordova-plugin-sugarizeros" spec="../cordova-plugin-sugarizeros" />

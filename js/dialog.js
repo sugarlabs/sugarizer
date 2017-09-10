@@ -241,8 +241,7 @@ enyo.kind({
 
 	ok: function() {
 		sugarizerOS.sharedKeyBuffer = this.$.keyInput.getValue();
-		sugarizerOS.setKey(sugarizerOS.NetworkBuffer.SSID, sugarizerOS.sharedKeyBuffer);
-		sugarizerOS.joinNetwork(sugarizerOS.NetworkBuffer.SSID, sugarizerOS.sharedKeyBuffer, sugarizerOS.NetworkBuffer.capabilities);
+		sugarizerOS.setKey(sugarizerOS.NetworkBuffer.SSID, sugarizerOS.sharedKeyBuffer, true);
 		this.hide();
 		this.$.okbutton.setDisabled(true);
 		this.$.cancelbutton.setDisabled(true);
@@ -514,7 +513,7 @@ enyo.kind({
 			{name: "reinittext", showing: false, content: "xxx", classes: "computer-reinit"},
 			{classes: "computer-line"},
 			{name: "copyright", content: "xxx", classes: "computer-copyright"},
-			{content: "© 2013-2016 Lionel Laské, Sugar Labs Inc and Contributors", classes: "computer-contributor"},
+			{content: "© 2013-2017 Lionel Laské, Sugar Labs Inc and Contributors", classes: "computer-contributor"},
 			{name: "license", content: "xxx", classes: "computer-licence"},
 			{name: "warningmessage", showing: false, content: "xxx", classes: "computer-warningmessage", showing: false}
 		]}

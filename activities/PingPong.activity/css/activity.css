@@ -1,0 +1,38 @@
+#main-toolbar #activity-button {
+  background-image: url(../activity/activity-icon.svg);
+}
+#main-canvas{
+  margin: 200px 600px;
+}
+#score-board{
+  background: black;
+  width: 300px;
+  position: absolute;
+  margin-top: 200px;
+  margin-left: 100px;
+  color: white;
+}
+#header{
+  text-align: center;
+}
+#body{
+  margin: 0 auto;
+  width: 200px;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+}
+#comp{
+  width: 67px;
+  margin: auto;
+}
+#hyphen{
+  width: 67px;
+  margin: auto;
+}
+#player{
+  width: 67px;
+  margin: auto;
+}

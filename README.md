@@ -58,7 +58,11 @@ Clone the project
 Change directory into sugarizer
 
 	cd sugarizer
+	
+Install the dependencies
 
+	npm install
+	
 Then launch Sugarizer for **GNU Linux** with:
 
 	npm start > /dev/null

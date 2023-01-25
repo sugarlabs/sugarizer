@@ -42,15 +42,32 @@ The Sugarizer desktop application has four possible arguments:
 * `--logoff` to logoff the previous user if one is connected (unsynchronized content will be lost)
 * `--init` to remove all existing Journal and settings (all will be lost)
 
-If you're a developer you could also launch Sugarizer desktop application using [electron](https://github.com/electron/electron). First install Node.js and npm on your computer. See [here](http://nodejs.org/) for more information. Then install electron and specific modules for Sugarizer by running:
+# Setup Sugarizer locally
+
+If you're a developer you could also launch Sugarizer desktop application in a local development environment as follows:
+
+(You must have [Node.js](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/package/npm) installed on your computer).
+
+To setup your local environment, install dependencies like [electron](https://github.com/electron/electron) and specific modules required for Sugarizer, to do this:
+
+
+Clone the project
+	
+	git clone https://www.github.com/sugarlabs/sugarizer.git
+	
+Change directory into sugarizer
+
+	cd sugarizer
+	
+Install the dependencies
 
 	npm install
-
-Then launch Sugarizer for GNU Linux with:
+	
+Then launch Sugarizer for **GNU Linux** with:
 
 	npm start > /dev/null
 
-Or, for Mac OS/Windows, just:
+Or, for **Mac OS/Windows**, just:
 
 	npm start
 

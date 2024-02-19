@@ -824,39 +824,62 @@ define(["sugar-web/activity/activity","tween","rAF","activity/directions","sugar
             }
         };
 
+        function mazeClick(event) {
+            if (levelStatus === 'transition') {
+                return;
+            }
+        
+            // Determine the cell clicked
+            var x = Math.floor(event.offsetX / cellWidth);
+            var y = Math.floor(event.offsetY / cellHeight);
+        
+            // Check if a player already exists at the clicked cell
+            for (var control in players) {
+                var player = players[control];
+                if (player.x === x && player.y === y) {
+                    return; // Player already exists at this cell
+                }
+            }
+        
+            // Instantiate a new player
+            var newPlayer = new Player('mouse');
+            newPlayer.x = x;
+            newPlayer.y = y;
+            players['mouse'] = newPlayer;
+        }
+        
         if (mazeCanvas.addEventListener) {
             mazeCanvas.addEventListener("mousedown", mazeClick);
         } else {
             mazeCanvas.attachEvent('onclick', mazeClick);
         }
-
+        
         var onKeyDown = function (event) {
-            if (levelStatus == 'transition') {
+            if (levelStatus === 'transition') {
                 return;
             }
-
+        
             var currentControl;
             var currentDirection;
-            for (control in controls) {
-                if (controls[control].indexOf(event.keyCode) != -1) {
+            for (var control in controls) {
+                if (controls[control].indexOf(event.keyCode) !== -1) {
                     currentControl = control;
-                    currentDirection = directions.orders[controls[control].
-                                                         indexOf(event.keyCode)];
+                    currentDirection = directions.orders[controls[control].indexOf(event.keyCode)];
                 }
             }
             if (currentControl === undefined) {
                 return;
             }
-
+        
             if (!(currentControl in players)) {
                 players[currentControl] = new Player(currentControl);
             }
-
+        
             var player = players[currentControl];
             player.move(currentDirection);
         };
-
-        document.addEventListener("keydown", onKeyDown);
+        
+        document.addEventListener("keydown", onKeyDown);        
 
         var animateGoal = function (timestamp) {
             var hue = Math.floor(120 * (1 + Math.cos(timestamp / 3000)));

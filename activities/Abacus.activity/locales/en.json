@@ -1,17 +1,23 @@
 {
-	"TutoPrev": "Prev",
+	"TutoPrev": "Previous",
 	"TutoNext": "Next",
-	"TutoEnd": "End",
-	"TutoExplainTitle": "Abacus Activity",
-	"TutoExplainContent": "Welcome into the Abacus activity. Abacus lets the learner explore different representations of numbers using different mechanical counting systems developed by the ancient Romans and Chinese",
-	"TutoAbacusTitle": "Abacus Choice",
-	"TutoAbacusContent": "Click here to select the type of Abacus to use. Some Abacus handle decimals, some handle fractions, some handle number in base 2 and you could even create your own abacus",
-	"TutoCustomTitle": "Custom",
-	"TutoCustomContent": "Click here to create a custom abacus. You could define number of rods, lines and base",
-	"TutoCopyTitle": "Copy",
-	"TutoCopyContent": "Click here to copy the current value into the clipboard",
-	"TutoClearTitle": "Clear",
-	"TutoClearContent": "Click here to reinit the value of abacus to 0",
-	"TutoCanvasTitle": "Abacus",
-	"TutoCanvasContent": "Here is the abacus. Click or drag the beads toward the central zone to set numbers"
+	"TutoEnd": "Finish",
+	"TutoExplainTitle": "Welcome to Abacus",
+	"TutoExplainContent": "This activity helps you explore how an Abacus works. An Abacus is a mechanical counting tool developed by ancient civilizations like the Romans and Chinese.",
+	
+	"TutoAbacusTitle": "Choose Your Abacus",
+	"TutoAbacusContent": "Click here to select the type of Abacus. You can use different versions, such as decimal, fraction, or even create a custom one.",
+	
+	"TutoCustomTitle": "Customize Your Abacus",
+	"TutoCustomContent": "Click here to create a custom Abacus. You can set the number of rods, lines, and even change the base system (e.g., base 2, base 10).",
+	
+	"TutoCopyTitle": "Copy Numbers",
+	"TutoCopyContent": "Click here to copy the current value of the Abacus to your clipboard for easy sharing.",
+	
+	"TutoClearTitle": "Reset Abacus",
+	"TutoClearContent": "Click here to reset the Abacus to zero.",
+	
+	"TutoCanvasTitle": "Using the Abacus",
+	"TutoCanvasContent": "This is the Abacus. Click or drag the beads towards the center to change the number."
 }
+

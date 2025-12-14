@@ -96,17 +96,6 @@ set it to `false`.
 For **Safari** go to the `Safari/Preferences...` menu, under Advanced panel check the *Show develop menu in menu bar* box. Then from the `Develop` menu, select *Disable local file restrictions*.
 
 
-# Windows Setup Notes
-## Common Issues & Fixes
-### Git clone fails with RPC error
-If cloning fails with `RPC failed` or `early EOF`, run:
-
-```bash
-git config --global http.postBuffer 524288000
-git clone --depth 1 https://github.com/sugarlabs/sugarizer.git
-
-
-
 # Sugarizer Web Application
 
 [Try it now! (try.sugarizer.org)](http://try.sugarizer.org/)
@@ -329,3 +318,11 @@ Sugarizer is licensed under the **Apache-2.0** license. See [LICENSE](LICENSE) f
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fllaske%2Fsugarizer.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fllaske%2Fsugarizer?ref=badge_shield&issueType=license)
 
 
+# Windows Setup Notes
+## Common Issues & Fixes
+### Git clone fails with RPC error
+If cloning fails with `RPC failed` or `early EOF`, run:
+
+```bash
+git config --global http.postBuffer 524288000
+git clone --depth 1 https://github.com/sugarlabs/sugarizer.git

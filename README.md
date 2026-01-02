@@ -164,7 +164,7 @@ Each line in this file is one activity. Here is the description of each field:
 * **directory**: Location directory of the activity in Sugarizer
 * **icon**: Location of the icon in the activity directory
 * **favorite**: true means that the activity is in the favorite view
-* **activityId** Reserved for internal use
+* **activityId**: Reserved for internal use
 
 Remove in this file rows for activities that you want to remove. Add in this file a line for each activity you want to add.
 

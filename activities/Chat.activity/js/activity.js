@@ -128,23 +128,23 @@ const app = Vue.createApp({
 			}, 50);
 		},
 
-		handleNetworkMessage(msgRecieved) {
+		handleNetworkMessage(msgReceived) {
 			const distanceFromBottom = this.$refs.msgContainer.scrollHeight - this.$refs.msgContainer.scrollTop - this.$refs.msgContainer.clientHeight;
 			if (distanceFromBottom < 100) this.scrollLatestMsg();
 			else {
-				switch (msgRecieved.msg) {
+				switch (msgReceived.msg) {
 					case 1:
-						this.$refs.SugarPopup.log(`${msgRecieved.userName} ${this.l10n.stringJoin} ${this.l10n.stringChat}`)
+						this.$refs.SugarPopup.log(`${msgReceived.userName} ${this.l10n.stringJoin} ${this.l10n.stringChat}`)
 						break;
 					case -1:
-						this.$refs.SugarPopup.log(`${msgRecieved.userName} ${this.l10n.stringLeave} ${this.l10n.stringChat}`)
+						this.$refs.SugarPopup.log(`${msgReceived.userName} ${this.l10n.stringLeave} ${this.l10n.stringChat}`)
 						break;
 					default:
-						this.$refs.SugarPopup.log(this.l10n.stringNewMsgFrom + " " + msgRecieved.userName)
+						this.$refs.SugarPopup.log(this.l10n.stringNewMsgFrom + " " + msgReceived.userName)
 						break;
 				}
 			}
-			this.messages.push(msgRecieved);
+			this.messages.push(msgReceived);
 		},
 
 		deleteMessage(key) {
@@ -158,7 +158,7 @@ const app = Vue.createApp({
 
 		onNetworkDataReceived(msg) {
 			const { name, networkId } = msg.user;
-			console.log("Recieved", msg.action);
+			console.log("Received", msg.action);
 			switch (msg.action) {
 				case "init":
 					this.messages = msg.content;

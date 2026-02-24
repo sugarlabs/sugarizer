@@ -317,3 +317,4 @@ Sugarizer is licensed under the **Apache-2.0** license. See [LICENSE](LICENSE) f
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fllaske%2Fsugarizer.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fllaske%2Fsugarizer?ref=badge_shield&issueType=license)
+Contribution by Janasruthi for NxtWave GSoC mentorship program

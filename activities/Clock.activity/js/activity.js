@@ -103,6 +103,17 @@ define(["sugar-web/activity/activity","sugar-web/env","sugar-web/graphics/radiob
             window.msRequestAnimationFrame;
         var show_am_pm = false;
         var show_mins = false;
+        // Is function ko add karein
+function debounce(func, delay) {
+    var timer;
+    return function() {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            func.apply(context, args);
+        }, delay);
+    };
+}
 
         function Clock() {
             this.face = "simple";
@@ -175,9 +186,9 @@ define(["sugar-web/activity/activity","sugar-web/env","sugar-web/graphics/radiob
 
             var that = this;
             window.onresize = function (event) {
-                that.updateSizes();
-                that.drawBackground();
-            };
+            that.updateSizes();
+            that.drawBackground();
+           };
 
             // Switch to full screen when the full screen button is pressed
             document.getElementById("fullscreen-button").addEventListener('click', function() {
